@@ -477,17 +477,7 @@ spec:
 
 **Component:** Delegate
 
-**Notes:** Needed to inject and rollback specified fault into the application microservices/infrastructure as well as validate hypothesis via the specified probe.
-
-### Abort/Stop Experiment Execution
-
-Enables aborting of one or more ongoing experiments in the EKS cluster.
-
-Same as in creation flow with some extra annotation in config map
-
-**Component:** Delegate
-
-**Notes:** Needed to enable abort of one or more ongoing experiments in the EKS cluster.
+**Notes:** Needed to inject and rollback the specified fault into the application microservices/infrastructure as well as validate the hypothesis via the specified probe.
 
 ---
 
@@ -908,6 +898,16 @@ Content-Type: application/json
 ```
 
 ---
+
+### Abort/Stop Experiment Execution
+
+Enables aborting of one or more ongoing experiments in the EKS cluster.
+
+Same as the [Chaos-Runner creation flow](#create-chaos-runner-on-eks-cluster), with some extra annotations in the  config map
+
+**Component:** Delegate
+
+**Notes:** Needed to enable abort of one or more ongoing experiments in the EKS cluster.
 
 ## Log Management
 
