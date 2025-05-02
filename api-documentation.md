@@ -218,7 +218,261 @@ OR
 
 Creates a Chaos Runner on an EKS cluster to inject and rollback specified fault into the application microservices/infrastructure and validate hypotheses via specified probes.
 
-**Endpoint:** Not fully specified in provided data
+Harness controlplane sends list of k8s resource manifest to delegate and delegate deploys it in target cluster. Delegate tokan isused in this communication.
+Here is one sample yaml spec
+
+```yaml
+---
+# Source: nginx/templates/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hce
+  labels:
+    kubernetes.io/metadata.name: hce
+---
+# Source: nginx/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: litmus
+  namespace: hce
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+---
+# Source: nginx/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ddci-preview
+  namespace: hce
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+stringData:
+  ACCOUNT_ID: "nKGIuZPuTyub1HSTL3pnyA"
+  INDIRECT_UPLOAD: "true"
+  LOG_SERVICE_URL: "https://shovanmaity.pr2.harness.io/gateway/log-service"
+  SKIP_SECURE_VERIFY: "false"
+  ACCESS_KEY: "<Token>"
+  LOG_SERVICE_TOKEN: "<LogServiceToken>"
+  PROXY_URL: ""
+  HTTP_PROXY: ""
+  HTTPS_PROXY: ""
+  NO_PROXY: ""
+  CLIENT_CERTIFICATE_SECRET: ""
+  CLIENT_CERTIFICATE_FILE_PATH: ""
+  CLIENT_CERTIFICATE_KEY_FILE_PATH: ""
+  CLIENT_CERTIFICATE_PATH: ""
+  CLIENT_CERTIFICATE_KEY_PATH: ""
+---
+# Source: nginx/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ddci-preview
+  namespace: hce
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+data:
+  EMISSARY_URL: ""
+  INSECURE_SKIP_VERIFY: "false"
+  ORG_ID: default
+  PROJECT_ID: test1
+  ENVIRONMENT_ID: demo
+  DDCR_ENDPOINT: http://ddci-preview.hce:8000
+  CORRELATION_ID: ddci-preview
+  KUBERNETES_INFRA_SERVICE_ENDPOINT: https://shovanmaity.pr2.harness.io/chaos/kserver/api
+  INFRA_ID: test3
+  LOG_SERVICE_ENDPOINT: https://shovanmaity.pr2.harness.io/gateway/log-service
+  LOG_SERVICE_ENABLED: "true"
+  LOG_WATCHER_IMAGE: docker.io/harness/chaos-log-watcher:main-latest
+---
+# Source: nginx/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: litmus
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+rules:
+    # for injecting chaos
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["create","delete","get","list","patch","update","watch","deletecollection"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["networkpolicies"]
+    verbs: ["create","delete","get","list"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get","list", "patch", "update"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list"]
+  - apiGroups: ["metrics.k8s.io"]
+    resources: ["pods","nodes"]
+    verbs: ["get", "list"]
+
+    # for checking the app parent resources as they are eligible chaos candidates
+  - apiGroups: ["apps"]
+    resources: ["deployments", "replicasets", "daemonsets", "statefulsets"]
+    verbs: ["list", "get","update"]
+  - apiGroups: [""]
+    resources: ["replicationcontrollers"]
+    verbs: ["get","list"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get","list"]
+  - apiGroups: ["apps.openshift.io"]
+    resources: ["deploymentconfigs"]
+    verbs: ["list", "get"]
+  - apiGroups: ["argoproj.io"]
+    resources: ["rollouts"]
+    verbs: ["list", "get"]
+---
+# Source: nginx/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: litmus
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: litmus
+subjects:
+- kind: ServiceAccount
+  name: litmus
+  namespace: hce
+---
+# Source: nginx/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: litmus
+  namespace: hce
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+rules:
+    # for creating and monitoring the helper pods
+  - apiGroups: [""]
+    resources: ["pods","secrets", "configmaps","services"]
+    verbs: ["create","delete","get","list","patch","update","watch","deletecollection"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["create","delete","get","list","patch","update","watch","deletecollection"]
+
+    # for tracking & getting logs of helper pods
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["get","list","create"]
+
+    # for self delete
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["create","delete","get","list","patch","update","deletecollection"]
+---
+# Source: nginx/templates/serviceaccount.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: litmus
+  namespace: hce
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: litmus
+subjects:
+- kind: ServiceAccount
+  name: litmus
+  namespace: hce
+---
+# Source: nginx/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ddci-preview
+  namespace: hce
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8000
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+---
+# Source: nginx/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ddci-preview
+  namespace: hce
+  labels:
+    ddcr.app/name: ddci-preview
+    ddcr.app/namespace: hce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      ddcr.app/name: ddci-preview
+      ddcr.app/namespace: hce
+  template:
+    metadata:
+      labels:
+        ddcr.app/name: ddci-preview
+        ddcr.app/namespace: hce
+    spec:
+      serviceAccountName: litmus
+      containers:
+      - name: scheduler
+        image: docker.io/harness/chaos-ddcr:main-latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsGroup: 2000
+          runAsUser: 2000
+        env:
+        - name: CHAOS_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: ddci-preview
+        - secretRef:
+            name: ddci-preview
+        ports:
+        - name: http
+          containerPort: 8000
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            ephemeral-storage: 500Mi
+            memory: 500Mi
+          requests:
+            cpu: 50m
+            ephemeral-storage: 250Mi
+            memory: 250Mi
+
+```
 
 **Component:** Delegate
 
@@ -228,7 +482,7 @@ Creates a Chaos Runner on an EKS cluster to inject and rollback specified fault 
 
 Enables aborting of one or more ongoing experiments in the EKS cluster.
 
-**Endpoint:** Not fully specified in provided data
+Same as in creation flow with some extra annotation in config map
 
 **Component:** Delegate
 
