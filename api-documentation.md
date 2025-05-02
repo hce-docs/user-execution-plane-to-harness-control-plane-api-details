@@ -52,7 +52,7 @@ Content-Type: application/json
 Authorization: Bearer <token>
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {
     "environmentIdentifier": "demo",
@@ -89,7 +89,7 @@ Authorization: Bearer <token>
 Content-Type: application/json; charset=UTF-8
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```json
 {
     "id": "68138d5935d08901c7c1cdea",
@@ -184,7 +184,7 @@ Content-Type: application/json
 Content-Encoding: gzip
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {
     "namespace": "",
@@ -219,7 +219,8 @@ OR
 
 Creates a Chaos Runner on an EKS cluster to inject and rollback specified fault into the application microservices/infrastructure and validate hypotheses via specified probes.
 
-Harness controlplane sends list of k8s resource manifest to delegate and delegate deploys it in target cluster. Delegate tokan isused in this communication.
+Harness controlplane sends a list of Kubernetes resource manifests to the delegate and the delegate deploys it in the target cluster. The delegate token is used in this communication.
+
 Here is one sample yaml spec
 
 ```yaml
@@ -502,7 +503,7 @@ Content-Type: application/json
 Accept: application/json
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {
   "taskType": "WORKFLOW_EVENT",
@@ -529,7 +530,7 @@ Accept: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```
 Received task callback for taskType: WORKFLOW_EVENT, response: Workflow run received for for WorkflowID: 23a6c18c-63c6-4948-b932-ae8eef3921f6, WorkflowRunID: 76079280-cfd6-4390-8ea4-86771c10f44e
 ```
@@ -561,7 +562,7 @@ Accept: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```json
 {
   "data": {
@@ -947,7 +948,7 @@ Content-Type: application/json
 Accept: application/json
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 [{
   "level": "info",
@@ -999,7 +1000,7 @@ Confirms and registers a new Linux or Windows chaos infrastructure with the cont
 Content-Type: application/json
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {
   "hostname": "ip-172-31-13-123",
@@ -1015,7 +1016,7 @@ Content-Type: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```json
 {
   "infraID": "6bdacf96-14fc-4edd-9277-8707b14c2f75",
@@ -1034,7 +1035,7 @@ Periodically signals the control plane that the chaos infrastructure is alive an
 Content-Type: application/json
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {}
 ```
@@ -1047,7 +1048,7 @@ Content-Type: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```json
 { "message": "OK" }
 ```
@@ -1071,7 +1072,7 @@ Content-Type: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```json
 {
   "taskList": [
@@ -1127,7 +1128,7 @@ Sends the current status (e.g., Running, Completed) of a specific chaos task bac
 Content-Type: application/json
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {
   "taskStatus": "Running",
@@ -1143,7 +1144,7 @@ Content-Type: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```json
 { "success": true }
 ```
@@ -1159,7 +1160,7 @@ Streams logs generated during chaos execution (e.g., probe output, chaos injecti
 Content-Type: application/json
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {
   "streamID": "5e83d1aa-bee0-48f6-a1a4-9bb235b17e95-linux-cpu-hog-1746115610-linux-cpu-stress-hv3pg",
@@ -1199,7 +1200,7 @@ Content-Type: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```json
 { "success": true }
 ```
@@ -1215,7 +1216,7 @@ Sends the final result with probe outcomes of a chaos experiment to the control 
 Content-Type: application/json
 ```
 
-**Request Body:**
+**Sample Request Body:**
 ```json
 {
   "result": {
@@ -1250,7 +1251,7 @@ Content-Type: application/json
 Content-Type: application/json
 ```
 
-**Response Body:**
+**Sample Response Body:**
 ```
 HTTP/1.1 200 OK
 ```
