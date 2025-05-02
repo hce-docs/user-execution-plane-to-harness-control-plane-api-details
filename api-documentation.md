@@ -2,26 +2,27 @@
 
 ## Overview
 
-This document provides comprehensive details about the APIs used for Chaos Engineering operations in Harness. The APIs are organized based on their functionality and the components that interact with them.
+This document comprehensively details the APIs used for Chaos Engineering operations in Harness. The source for these API requests are the Harness components installed in the User cluster(s). 
 
 ## Table of Contents
 
-1. [Cluster Management](#cluster-management)
+1. [Transient Chaos Workload Creation via Delegate on Kubernetes](#transient-chaos-workload-creation-via-delegate)
    - [Create Discovery Agent on EKS Cluster](#create-discovery-agent-on-eks-cluster)
-   - [Discovery Agent Data Transmission](#discovery-agent-data-transmission)
    - [Create Chaos Runner on EKS Cluster](#create-chaos-runner-on-eks-cluster)
-   - [Abort/Stop Experiment Execution](#abortstop-experiment-execution)
+  
+2. [Discovery Agent Data (Workloads and Connections) Sent to Harness Control Plane (Service Discovery Manager)](#discovery-agent-data-transmission)
 
-2. [Experiment Execution](#experiment-execution)
+3. [Experiment Execution Data (Status, Results) Sent to Harness Control Plane (Infrastructure Server)](#experiment-execution)
    - [Experiment Data Transmission](#experiment-data-transmission)
    - [Fetch Experiment Execution Data](#fetch-experiment-execution-data)
+   - [Abort/Stop Experiment Execution](#abortstop-experiment-execution)
 
-3. [Log Management](#log-management)
+4. [Log Data Sent to Harness Control Plane (Log Service)](#log-management)
    - [Open Logstream](#open-logstream)
    - [Stream Execution Logs](#stream-execution-logs)
    - [Close Logstream](#close-logstream)
 
-4. [Infrastructure Management (Linux & Windows)](#infrastructure-management-linux--windows)
+4. [Long-Running Agent Management on Linux](#infrastructure-management-linux)
    - [Register Chaos Infrastructure](#register-chaos-infrastructure)
    - [Update Infrastructure Liveness](#update-infrastructure-liveness)
    - [Get New Task](#get-new-task)
@@ -31,7 +32,7 @@ This document provides comprehensive details about the APIs used for Chaos Engin
 
 ---
 
-## Cluster Management
+## Transient Chaos Workload Creation via Delegate
 
 ### Create Discovery Agent on EKS Cluster
 
@@ -985,7 +986,7 @@ Accept: application/json
 
 ---
 
-## Infrastructure Management (Linux & Windows)
+## Infrastructure Management (Linux)
 
 ### Register Chaos Infrastructure
 
