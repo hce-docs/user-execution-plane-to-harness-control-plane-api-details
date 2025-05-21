@@ -211,7 +211,83 @@ OR
     "connectionList": []
 }
 ```
+namespace, node, pod denotes to the actual k8s object here is one sameple namespace 👇, We don't fectch config map or secret we any fetch namespace, node, service, pod, replicaset, deployment, statefulset, daemonset, jobs, cronjobs, replication controller.
+```text
+namespaces --->
+typemeta:
+    kind: ""
+    apiversion: ""
+objectmeta:
+    name: bofa
+    generatename: ""
+    namespace: ""
+    selflink: ""
+    uid: 4baa3793-6f45-436a-8c54-3afe130adaed
+    resourceversion: "107365833"
+    generation: 0
+    creationtimestamp: "2024-01-18T06:22:34Z"
+    deletiontimestamp: null
+    deletiongraceperiodseconds: null
+    labels:
+        key: value
+        kubernetes.io/metadata.name: bofa
+    annotations: {}
+    ownerreferences: []
+    finalizers: []
+    managedfields: []
+spec:
+    finalizers:
+        - kubernetes
+status:
+    phase: Active
+    conditions: []
+```
 
+As part of connection we discovery we get IP port of the services, if any k8s application if making any TCP connect call that will be recorded. Sample log is attached 👇
+```text
+go version go1.23.9
+go os linux
+go arch amd64
+collector configured with value : {WindowInMin:2 Probe:{Kubernetes:{Namespaced:false Namespace:hce EnableBatchResources:false EnableOrphanedPod:false NamespaceSelector: BlacklistedNamespaces:[] ObservedNamespaces:[bofa] NodeSelector:}}}
+pref buffer closed, exiting..
+connection 10.16.3.18 -> 10.24.11.58:8080 from pod {0d651d0c-c7e4-47bc-8933-9dd16b52ef35} to svc {db679cb5-a6f7-476a-b2b6-5cebcc5c382b} or pod {} added to the list
+skiping connection {1074200576 10.16.3.1 10.16.3.6 8080} as source is not a pod
+skiping connection {3088056320 10.16.3.5 10.24.7.97 8080} as source is not a pod
+skiping connection {1074200576 10.16.3.1 10.16.3.18 8080} as source is not a pod
+connection 10.16.3.6 -> 74.125.202.95:443 from pod {e9adc5f4-fbd2-4973-a4ed-9e0108a64ac4} to svc {} or pod {} added to the list
+skiping connection {3088056320 10.16.3.5 10.24.11.156 80} as source is not a pod
+skiping connection {3088056320 10.16.3.5 10.24.7.164 5432} as source is not a pod
+skiping connection {1074200576 10.16.3.1 10.16.3.13 8080} as source is not a pod
+skiping connection {3088056320 10.16.3.5 10.24.8.10 8080} as source is not a pod
+skiping connection {118622208 10.16.3.49 35.185.253.115 443} as source is not a pod
+skiping connection {1074200576 10.16.3.1 10.16.3.9 8080} as source is not a pod
+skiping connection {1074200576 10.16.3.1 10.16.3.12 8080} as source is not a pod
+skiping connection {1074200576 127.0.0.1 127.0.0.1 989} as source is not a pod
+connection 10.16.3.18 -> 142.250.125.95:443 from pod {0d651d0c-c7e4-47bc-8933-9dd16b52ef35} to svc {} or pod {} added to the list
+skiping connection {454363136 10.128.0.95 35.185.253.115 443} as source is not a pod
+connection 10.16.3.18 -> 10.24.2.142:8080 from pod {0d651d0c-c7e4-47bc-8933-9dd16b52ef35} to svc {07e7eacc-0bcf-4fbd-84dd-e705d9e7935e} or pod {} added to the list
+skiping connection {3088056320 10.16.3.5 10.24.13.45 8080} as source is not a pod
+connection 10.16.3.18 -> 10.24.7.97:8080 from pod {0d651d0c-c7e4-47bc-8933-9dd16b52ef35} to svc {d706bf2a-8224-4ebe-9547-4ba5e80262a2} or pod {} added to the list
+skiping connection {2551908352 127.0.0.1 127.0.0.1 10248} as source is not a pod
+skiping connection {454363136 10.128.0.95 10.24.0.1 443} as source is not a pod
+skiping connection {1410662400 10.128.0.95 10.24.14.4 8090} as source is not a pod
+connection 10.16.3.18 -> 10.24.13.45:8080 from pod {0d651d0c-c7e4-47bc-8933-9dd16b52ef35} to svc {738d98ef-36f5-4628-bf2d-ccadd7d00afa} or pod {} added to the list
+skiping connection {1074200576 10.16.3.1 10.16.3.10 8000} as source is not a pod
+skiping connection {3809740800 10.16.3.51 10.24.0.1 443} as source is not a pod
+connection 10.16.3.18 -> 173.194.194.95:443 from pod {0d651d0c-c7e4-47bc-8933-9dd16b52ef35} to svc {} or pod {} added to the list
+skiping connection {1074200576 10.16.3.1 10.16.3.3 5680} as source is not a pod
+skiping connection {3088056320 10.16.3.5 10.24.9.222 5432} as source is not a pod
+skiping connection {1074200576 10.16.3.1 10.16.3.17 8080} as source is not a pod
+skiping connection {3809740800 10.16.3.51 35.185.253.115 443} as source is not a pod
+skiping connection {3088056320 10.16.3.5 10.24.2.142 8080} as source is not a pod
+connection 10.16.3.18 -> 10.24.8.10:8080 from pod {0d651d0c-c7e4-47bc-8933-9dd16b52ef35} to svc {300a69d2-19c6-436f-8c18-5b7f1d5af0fb} or pod {} added to the list
+skiping connection {1074200576 10.16.3.1 10.16.3.5 9115} as source is not a pod
+skiping connection {3088056320 10.16.3.5 10.24.11.58 8080} as source is not a pod
+skiping connection {1929838592 10.128.0.95 10.128.0.106 443} as source is not a pod
+connection 10.16.3.17 -> 10.24.2.142:8080 from pod {94f11ff3-ebee-43a6-8134-06ce58fcfb1d} to svc {07e7eacc-0bcf-4fbd-84dd-e705d9e7935e} or pod {} added to the list
+skiping connection {1980893184 10.16.3.50 35.185.253.115 443} as source is not a pod
+pushed 9 connections for node name gke-v2-onboarding-pool-1-6ed659e7-6zmq
+```
 **Response:**
 - Status Code: 201/401/404
 
